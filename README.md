@@ -1,7 +1,7 @@
 # pts-lazyload
 Lazy loading JS
 
-Для фильтрации ботов и загрузки кодов Яндекс.Метрики требуется выполнить следующие шаги.
+Для фильтрации ботов и отложенной загрузки JS скриптов требуется выполнить следующие шаги.
 
 1. Подключить JQuery v2+ https://code.jquery.com/jquery/;
 2. Подключить JQuery cookie https://plugins.jquery.com/cookie/;
