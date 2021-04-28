@@ -50,7 +50,7 @@ LazyLoad.simpleCheck( need_check ); //метод ожидает 0 или 1, 1 в
             </div>
             <div class="site-form-buttons site-form--center">
                 <div class="site-form-button">
-                    <a href="jav * ascript:void(0);" class="site-btn--submit green welcome-pt-message-btn" oncl ick="$.fancybox.close();">Продолжить</a>
+                    <a href="javascript:void(0);" class="site-btn--submit green welcome-pt-message-btn" onclick="$.fancybox.close();">Продолжить</a>
                 </div>
             </div>
         </form>
