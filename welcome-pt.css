@@ -1,0 +1,99 @@
+/* Modal */
+.welcome-pt-overlay {
+  opacity: 0;
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: rgba(0, 0, 0, .5);
+  z-index: 8000;
+  transition: all 0.3s;
+}
+.welcome-pt-message {
+  opacity: 0;
+  visibility: hidden;
+  width: 100%;
+  max-width: 500px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 8001;
+  box-shadow: 0px 11px 15px -7px rgb(0 0 0 / 20%), 0px 24px 38px 3px rgb(0 0 0 / 14%), 0px 9px 46px 8px rgb(0 0 0 / 12%);
+  text-align: center;
+  padding: 30px;
+  margin: 16px 0;
+  border-radius: 4px;
+  background-color: #fff;
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+@media (max-width: 532px) {
+  .welcome-pt-message {
+    width: auto;
+    left: 16px;
+    right: 16px;
+    transform: translate(0, -50%);
+  }
+}
+.is-active.welcome-pt-overlay,
+.is-active .welcome-pt-message {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Custom styles here */
+.site-form-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 36px;
+  line-height: 40px;
+  font-weight: 300;
+  color: #3d424b;
+}
+@media (max-width: 532px) {
+  .site-form-title {
+    margin-bottom: 14px;
+    font-size: 30px;
+    line-height: 36px;
+  }
+}
+.site-form-text {
+  font-size: 16px;
+  line-height: 20px;
+  margin-top: 0;
+}
+.site-form-buttons {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+.welcome-pt-close {
+  height: 50px;
+  line-height: 50px;
+  min-width: 180px;
+  padding: 0 32px;
+  border: none;
+  font-size: 16px;
+  white-space: nowrap;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: 5px;
+  background-color: #0836ff;
+  transition: all 0.3s ease 0s;
+  display: inline-block;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0px 3px 1px -2px rgb(0 0 0 / 20%), 0px 2px 2px 0px rgb(0 0 0 / 14%), 0px 1px 5px 0px rgb(0 0 0 / 12%);
+}
+.welcome-pt-close:hover {
+  background-color: #0435c9;
+}

@@ -1,48 +1,49 @@
 class ptsLazyLoad {
-    constructor( dataLazyLoadingJS, dataSettings ) {
+    constructor(dataLazyLoadingJS, dataSettings) {
         this.dataLazyLoadingJS = dataLazyLoadingJS;
         this.dataSettings = dataSettings;
     }
-    lazyLoadingJS( type, area ) {
+    lazyLoadingJS(type, area) {
         if (this.dataLazyLoadingJS['data'][type]['status'] === false) {
             this.dataLazyLoadingJS['data'][type]['status'] = true;
-            area.append(this.dataLazyLoadingJS['data'][type]['html']);
+
+            const render = (relEl, tpl) => {
+                const range = document.createRange();
+                range.selectNode(relEl);
+                const child = range.createContextualFragment(tpl);
+                return relEl.appendChild(child);
+            };
+            render(area, this.dataLazyLoadingJS['data'][type]['html']);
         }
     }
     loadAllDataScripts() {
-        let that = this;
-        $.each(this.dataLazyLoadingJS['data'], function (i, el) {
-            that.lazyLoadingJS(i, $(el.area));
-        });
+        for (let key in this.dataLazyLoadingJS['data']) {
+            this.lazyLoadingJS(key, document.querySelector(this.dataLazyLoadingJS['data'][key]['area']));
+        }
     }
     showMessage() {
         let that = this;
-        $.fancybox({
-            content: that.dataSettings.fancybox.content,
-            wrapCSS: that.dataSettings.fancybox.wrapCSS,
-            helpers: {
-                overlay : {closeClick: false}
-            },
-            beforeClose: function () {
-                that.cookieSet();
-                that.loadAllDataScripts();
-            }
+        let modal = document.querySelector('.welcome-pt-overlay');
+        let closeButton = document.querySelector('.welcome-pt-close');
+        modal.classList.add('is-active');
+        closeButton.addEventListener('click', function(event) {    
+            event.preventDefault();  
+            modal.classList.remove('is-active');
+            that.cookieSet();
+            that.loadAllDataScripts();
+            setTimeout(function() {
+                modal.style.display = 'none';
+            }, 300);
         });
     }
-    isSearchSystemBotSigns() {
+    isSearchSystemBotSigns() {        
         let uaList = [
             'APIs-Google', 'Mediapartners-Google', 'AdsBot-Google-Mobile', 'AdsBot-Google', 'Googlebot', 'AdsBot-Google-Mobile-Apps',
             'YandexBot', 'YandexMobileBot', 'YandexDirectDyn', 'YandexScreenshotBot', 'YandexImages', 'YandexVideo', 'YandexVideoParser',
             'YandexMedia', 'YandexBlogs', 'YandexFavicons', 'YandexWebmaster', 'YandexPagechecker', 'YandexImageResizer', 'YandexAdNet',
             'YandexDirect', 'YaDirectFetcher', 'YandexCalendar', 'YandexSitelinks', 'YandexMetrika', 'YandexNews', 'YandexCatalog',
             'YandexMarket', 'YandexVertis', 'YandexForDomain', 'YandexSpravBot', 'YandexSearchShop', 'YandexMedianaBot', 'YandexOntoDB',
-            'YandexOntoDBAPI', 'YandexVerticals',
-            'Mail.RU_Bot',
-            'StackRambler',
-            'Yahoo',
-            'msnbot',
-            'bingbot',
-            'PixelTools', 'PixelBot'
+            'YandexOntoDBAPI', 'YandexVerticals', 'Mail.RU_Bot', 'StackRambler', 'Yahoo', 'msnbot', 'bingbot', 'PixelTools', 'PixelBot'
         ];
         let sBrowser = false, sUsrAg = navigator.userAgent;
         for (let i = 0; i < uaList.length; i += 1) {
@@ -55,12 +56,15 @@ class ptsLazyLoad {
         return sBrowser;
     }
     cookieCheck() {
-        return $.cookie(this.dataSettings.cookie_name) !== undefined
+        return document.cookie.indexOf(this.dataSettings.cookie_name) > -1;
     }
     cookieSet() {
-        $.cookie(this.dataSettings.cookie_name, true, {expires: 365, path: '/'});
+        const date = new Date();      
+        date.setTime(`${date.getTime()}${(365 * 30 * 24 * 60 * 60 * 1000)}`);      
+        let expiryDate = `expiryDate=" ${date.toUTCString()}`;      
+        document.cookie = `${this.dataSettings.cookie_name}=true; ${expiryDate}; path=/`;
     }
-    simpleCheck( need_check ) {
+    simpleCheck(need_check) {
         if (+need_check === 1 && !this.cookieCheck() && !this.isSearchSystemBotSigns()) {
             this.showMessage();
         } else {
