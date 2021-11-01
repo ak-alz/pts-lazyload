@@ -1,12 +1,10 @@
-# pts-lazyload
-Lazy loading JS
+# pts-lazyload v2
+Lazy loading JS (без подключения доп. библиотек)
 
 Для фильтрации ботов и отложенной загрузки JS скриптов требуется выполнить следующие шаги.
 
-1. Подключить JQuery v2+ https://code.jquery.com/jquery/;
-2. Подключить JQuery cookie https://plugins.jquery.com/cookie/;
-3. Подключить FancyBox v2+ https://fancyapps.com/fancybox/;
-4. Подключить скрипт pts.lazyload;
+1. Подключить файл стилей welcome-pt.css
+2. Подключить скрипт pts.lazyload;
 
 Инициализируем параметры скриптов для отложенной загрузки:
 ```javascript
@@ -24,11 +22,7 @@ let dataLazyLoadingJS = {
 Инициализируем параметры для отрисовки сообщения и установки кук:
 ```javascript
 let dataSettings = {
-    cookie_name: 'SOME_UNIQUE_COOIE_NAME',
-    fancybox: {
-        content: $('.welcome-pt-message'),
-        wrapCSS: 'site-scrollable-fancybox'
-    }
+    cookie_name: 'SOME_UNIQUE_COOIE_NAME'
 };
 ```
 
@@ -36,31 +30,33 @@ let dataSettings = {
 ```javascript
 let LazyLoad = new ptsLazyLoad(dataLazyLoadingJS, dataSettings);
 let need_check = 1;
-LazyLoad.simpleCheck( need_check ); //метод ожидает 0 или 1, 1 в случае, если необходимо выводить сообщение, 0, если не надо
+LazyLoad.simpleCheck(need_check); //метод ожидает 0 или 1, 1 в случае, если необходимо выводить сообщение, 0, если не надо
 ```
 
 Пример:
 ```html
-<div class="site-row">
-    <div class="site-popup-inner welcome-pt-message" style="display: none;">
-        <form method="post" enctype="multipart/form-data" action="">
-            <div class="site-form-title">Добро пожаловать</div>
-            <div class="site-row">
-                <p class="site-form-text">Благодарим за посещение нашего ресурса.</p>
-            </div>
-            <div class="site-form-buttons site-form--center">
-                <div class="site-form-button">
-                    <a href="javascript:void(0);" class="site-btn--submit green welcome-pt-message-btn" onclick="$.fancybox.close();">Продолжить</a>
+<div class="welcome-pt-modal">
+    <div class="welcome-pt-overlay">
+        <div class="site-popup-inner welcome-pt-message">
+            <form method="post" enctype="multipart/form-data" action="">
+                <div class="site-form-title">Добро пожаловать!</div>
+                <div class="site-row">
+                    <p class="site-form-text">Благодарим за посещение нашего ресурса.</p>
                 </div>
-            </div>
-        </form>
+                <div class="site-form-buttons">
+                    <div class="site-form-button">
+                        <a href="#" class="welcome-pt-close">Продолжить</a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
 <script src="/libs/pts-lazyload/pts.lazyload.js"></script>
 ```
 ```javascript
-$(function() {
+document.addEventListener('DOMContentLoaded', function() {
     let dataLazyLoadingJS = {
         data: {
             ya_counter: {
@@ -76,11 +72,7 @@ $(function() {
         }
     };
     let dataSettings = {
-        cookie_name: '__UNIQUE_VERIFIED_COOKIE_NAME',
-        fancybox: {
-            content: $('.welcome-pt-message'),
-            wrapCSS: 'site-scrollable-fancybox'
-        }
+        cookie_name: '__UNIQUE_VERIFIED_COOKIE_NAME'
     };
     let LazyLoad = new ptsLazyLoad(dataLazyLoadingJS, dataSettings);
     LazyLoad.simpleCheck({{ app['user'] ? 0 : 1 }})
