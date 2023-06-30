@@ -3,6 +3,18 @@ class ptsLazyLoad {
         this.dataLazyLoadingJS = dataLazyLoadingJS;
         this.dataSettings = dataSettings;
     }
+    #engines =
+        [
+            'https://www.google.',
+            'https://yandex.',
+            'https://nova.rambler.ru',
+            'https://www.bing.com/',
+        ];
+    checkReferrer(){
+        this.#engines.find(item => {
+            return document.referrer.startsWith(item);
+        })
+    }
     lazyLoadingJS(type, area) {
         // if (this.dataLazyLoadingJS['data'][type]['status'] === false) {
         //     this.dataLazyLoadingJS['data'][type]['status'] = true;
@@ -68,7 +80,7 @@ class ptsLazyLoad {
         // document.cookie = `${this.dataSettings.cookie_name}=true; ${expiryDate}; path=/`;
     }
     simpleCheck(need_check) {
-        if (+need_check === 1 && !this.cookieCheck() && !this.isSearchSystemBotSigns()) {
+        if (+need_check === 1 && !this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
             this.showMessage();
         } else {
             this.loadAllDataScripts();
