@@ -4,8 +4,8 @@ class ptsLazyLoad {
         this.dataSettings = dataSettings;
     }
     lazyLoadingJS(type, area) {
-        if (this.dataLazyLoadingJS['data'][type]['status'] === false) {
-            this.dataLazyLoadingJS['data'][type]['status'] = true;
+        // if (this.dataLazyLoadingJS['data'][type]['status'] === false) {
+        //     this.dataLazyLoadingJS['data'][type]['status'] = true;
 
             const render = (relEl, tpl) => {
                 const range = document.createRange();
@@ -14,7 +14,7 @@ class ptsLazyLoad {
                 return relEl.appendChild(child);
             };
             render(area, this.dataLazyLoadingJS['data'][type]['html']);
-        }
+        // }
     }
     loadAllDataScripts() {
         for (let key in this.dataLazyLoadingJS['data']) {
@@ -31,9 +31,9 @@ class ptsLazyLoad {
             modal.classList.remove('is-active');
             that.cookieSet();
             that.loadAllDataScripts();
-            setTimeout(function() {
-                modal.style.display = 'none';
-            }, 300);
+            // setTimeout(function() {
+            //     modal.style.display = 'none';
+            // }, 300);
         });
     }
     isSearchSystemBotSigns() {        
@@ -45,24 +45,27 @@ class ptsLazyLoad {
             'YandexMarket', 'YandexVertis', 'YandexForDomain', 'YandexSpravBot', 'YandexSearchShop', 'YandexMedianaBot', 'YandexOntoDB',
             'YandexOntoDBAPI', 'YandexVerticals', 'Mail.RU_Bot', 'StackRambler', 'Yahoo', 'msnbot', 'bingbot', 'PixelTools', 'PixelBot'
         ];
-        let sBrowser = false, sUsrAg = navigator.userAgent;
-        for (let i = 0; i < uaList.length; i += 1) {
-            if (sUsrAg.indexOf(uaList[i]) > -1) {
-                sBrowser = true;
-                break;
-            }
-        }
+        let   sUsrAg = navigator.userAgent;
+        return !!uaList.find(item => sUsrAg.includes(item));
+        // let sBrowser = false, sUsrAg = navigator.userAgent;
+        // for (let i = 0; i < uaList.length; i += 1) {
+        //     if (sUsrAg.indexOf(uaList[i]) > -1) {
+        //         sBrowser = true;
+        //         break;
+        //     }
+        // }
 
-        return sBrowser;
+        // return sBrowser;
     }
     cookieCheck() {
-        return document.cookie.indexOf(this.dataSettings.cookie_name) > -1;
+        return document.cookie.includes(this.dataSettings.cookie_name);
     }
     cookieSet() {
-        const date = new Date();      
-        date.setTime(`${date.getTime()}${(365 * 30 * 24 * 60 * 60 * 1000)}`);      
-        let expiryDate = `expiryDate=" ${date.toUTCString()}`;      
-        document.cookie = `${this.dataSettings.cookie_name}=true; ${expiryDate}; path=/`;
+        document.cookie = `${this.dataSettings.cookie_name}=true; max-age=${365 * 30 * 24 * 60 * 60 * 1000}; path=/`;
+        // const date = new Date();
+        // date.setTime(`${date.getTime()}${(365 * 30 * 24 * 60 * 60 * 1000)}`);
+        // let expiryDate = `expiryDate=" ${date.toUTCString()}`;
+        // document.cookie = `${this.dataSettings.cookie_name}=true; ${expiryDate}; path=/`;
     }
     simpleCheck(need_check) {
         if (+need_check === 1 && !this.cookieCheck() && !this.isSearchSystemBotSigns()) {
