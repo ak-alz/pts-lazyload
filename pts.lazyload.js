@@ -1,3 +1,6 @@
+document.addEventListener('ptz-click', () => {
+    console.log('ptz-click')
+})
 class ptsLazyLoad {
     constructor(dataLazyLoadingJS, dataSettings) {
         this.dataLazyLoadingJS = dataLazyLoadingJS;
@@ -15,9 +18,6 @@ class ptsLazyLoad {
         return !!this.#engines.find(item => document.referrer.includes(item))
     }
     lazyLoadingJS(type, area) {
-        // if (this.dataLazyLoadingJS['data'][type]['status'] === false) {
-        //     this.dataLazyLoadingJS['data'][type]['status'] = true;
-
             const render = (relEl, tpl) => {
                 const range = document.createRange();
                 range.selectNode(relEl);
@@ -25,9 +25,9 @@ class ptsLazyLoad {
                 return relEl.appendChild(child);
             };
             render(area, this.dataLazyLoadingJS['data'][type]['html']);
-        // }
     }
     loadAllDataScripts() {
+        document.dispatchEvent(new Event("ptz-click"));
         for (let key in this.dataLazyLoadingJS['data']) {
             this.lazyLoadingJS(key, document.querySelector(this.dataLazyLoadingJS['data'][key]['area']));
         }
@@ -42,9 +42,6 @@ class ptsLazyLoad {
             modal.classList.remove('is-active');
             that.cookieSet();
             that.loadAllDataScripts();
-            // setTimeout(function() {
-            //     modal.style.display = 'none';
-            // }, 300);
         });
     }
     isSearchSystemBotSigns() {        
@@ -58,41 +55,18 @@ class ptsLazyLoad {
         ];
         let   sUsrAg = navigator.userAgent;
         return !!uaList.find(item => sUsrAg.includes(item));
-        // let sBrowser = false, sUsrAg = navigator.userAgent;
-        // for (let i = 0; i < uaList.length; i += 1) {
-        //     if (sUsrAg.indexOf(uaList[i]) > -1) {
-        //         sBrowser = true;
-        //         break;
-        //     }
-        // }
-
-        // return sBrowser;
     }
     cookieCheck() {
         return document.cookie.includes(this.dataSettings.cookie_name);
     }
     cookieSet() {
         document.cookie = `${this.dataSettings.cookie_name}=true; max-age=${365 * 30 * 24 * 60 * 60 * 1000}; path=/`;
-        // const date = new Date();
-        // date.setTime(`${date.getTime()}${(365 * 30 * 24 * 60 * 60 * 1000)}`);
-        // let expiryDate = `expiryDate=" ${date.toUTCString()}`;
-        // document.cookie = `${this.dataSettings.cookie_name}=true; ${expiryDate}; path=/`;
     }
     simpleCheck(need_check) {
-        if (+need_check === 1 && this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
-            // this.showMessage();
-            console.log('show message');
-            console.log(need_check)
-            console.log(this.cookieCheck())
-            console.log(!this.isSearchSystemBotSigns())
-            console.log(!this.checkReferrer())
+        if (!!need_check && !this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
+            this.showMessage();
         } else {
-            // this.loadAllDataScripts();
-            console.log('no show message')
-            console.log(need_check)
-            console.log(this.cookieCheck())
-            console.log(!this.isSearchSystemBotSigns())
-            console.log(!this.checkReferrer())
+            this.loadAllDataScripts();
         }
     }
 }
