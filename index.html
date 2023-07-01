@@ -15,43 +15,58 @@
 		<div class="welcome-pt-overlay">
 			<div class="site-popup-inner welcome-pt-message">
 				<form method="post" enctype="multipart/form-data" action="">
-					<div class="site-form-title">Добро пожаловать!</div>
 					<div class="site-row">
-						<p class="site-form-text">Благодарим за посещение нашего ресурса.</p>
+						<p class="site-form-text">Мы используем файлы cookie на нашем сайте</p>
 					</div>
 					<div class="site-form-buttons">
-						<div class="site-form-button">
-							<a href="#" class="welcome-pt-close">Продолжить</a>
+						<div class="site-form-button welcome-pt-close">
+							<span>OK</span>
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
 	</div>
-
 	<script src="pts.lazyload.js"></script>
 	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			let dataLazyLoadingJS = {
-				data: {
-					ya_counter: {
-						status: false,
-						html: '<script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(86115125,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true, webvisor:true }); <\/script><noscript><div><img src="https://mc.yandex.ru/watch/86115125" style="position:absolute; left:-9999px;" alt="" \/><\/div><\/noscript>',
-						area: '.before-footer-scripts-place'
-					},
-					ga_counter: {
-						status: false,
-						html: `<script async src="https://www.googletagmanager.com/gtag/js?id=ga-unique-id"><\/script><script>function getCid(){var match=document.cookie.match('(?:^|;)\\\\s*_ga=([^;]*)');var raw=(match)?decodeURIComponent(match[1]):null;if(raw)match=raw.match(/(\\d+\\.\\d+)$/);var gacid=(match)?match[1]:null;return gacid?gacid:false;}<\/script>`,
-						area: 'head'
-					}
-				}
-			};
-			let dataSettings = {
-				cookie_name: '__UNIQUE_VERIFIED_COOKIE_NAME',
-			};
-			let LazyLoad = new ptsLazyLoad(dataLazyLoadingJS, dataSettings);
-			LazyLoad.simpleCheck(1);
-	});
+		const data = {
+			counters: [
+				{
+					html: `<script async src="https://www.googletagmanager.com/gtag/js?id=G-RJLD2YFT6R"><\/script>
+							<script>
+								window.dataLayer = window.dataLayer || [];
+								function gtag(){dataLayer.push(arguments);}
+								gtag('js', new Date());
+
+								gtag('config', 'G-RJLD2YFT6R');
+							<\/script>`,
+					area: '.before-footer-scripts-place'
+				},
+				{
+					html: `
+					<script type="text/javascript" >
+					(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+					m[i].l=1*new Date();
+					for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+					k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+					(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+					ym(88114785, "init", {
+					clickmap:true,
+					trackLinks:true,
+					accurateTrackBounce:true,
+					webvisor:true
+					});
+	<\/script>
+	<noscript><div><img src="https://mc.yandex.ru/watch/88114785" style="position:absolute; left:-9999px;" alt="" /></div><\/noscript>`,
+					area: '.before-footer-scripts-place'
+				},
+			],
+			cookie_name: 'PTZ__VERIFIED_COOKIE_NAME',
+			modalText: 'Мы используем файлы cookie на нашем сайте'
+		}
+		new ptsLazyLoad(data).init(1);
 	</script>
+
 </body>
 </html>

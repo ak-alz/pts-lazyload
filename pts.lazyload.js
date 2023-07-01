@@ -2,9 +2,14 @@ document.addEventListener('ptz-click', () => {
     console.log('ptz-click')
 })
 class ptsLazyLoad {
-    constructor(dataLazyLoadingJS, dataSettings) {
-        this.dataLazyLoadingJS = dataLazyLoadingJS;
-        this.dataSettings = dataSettings;
+    constructor(data = {
+        counters: [],
+        cookie_name: 'PTZ__VERIFIED_COOKIE_NAME',
+        modalText: 'Мы используем файлы cookie на нашем сайте'
+    }) {
+        this.dataLazyLoadingJS = data.counters;
+        this.cookie_name = data.cookie_name;
+        this.modalText = data.modalText;
     }
     #engines =
         [
@@ -12,36 +17,39 @@ class ptsLazyLoad {
             'https://yandex.',
             'https://nova.rambler.ru',
             'https://www.bing.com/',
-            'http://localhost'
         ];
     checkReferrer(){
         return !!this.#engines.find(item => document.referrer.includes(item))
     }
-    lazyLoadingJS(type, area) {
+    lazyLoadingJS(counter) {
             const render = (relEl, tpl) => {
+                console.log(relEl)
                 const range = document.createRange();
                 range.selectNode(relEl);
                 const child = range.createContextualFragment(tpl);
                 return relEl.appendChild(child);
             };
-            render(area, this.dataLazyLoadingJS['data'][type]['html']);
+            const area = document.querySelector(counter.area) || document.querySelector('head');
+
+            render(area, counter['html']);
     }
     loadAllDataScripts() {
         document.dispatchEvent(new Event("ptz-click"));
-        for (let key in this.dataLazyLoadingJS['data']) {
-            this.lazyLoadingJS(key, document.querySelector(this.dataLazyLoadingJS['data'][key]['area']));
-        }
+        this.dataLazyLoadingJS.forEach(item => {
+            this.lazyLoadingJS(item);
+        })
     }
     showMessage() {
-        let that = this;
         let modal = document.querySelector('.welcome-pt-overlay');
-        let closeButton = document.querySelector('.welcome-pt-close');
+        let text = modal.querySelector('.site-form-text');
+        text.innerText = this.modalText;
         modal.classList.add('is-active');
-        closeButton.addEventListener('click', function(event) {    
-            event.preventDefault();  
-            modal.classList.remove('is-active');
-            that.cookieSet();
-            that.loadAllDataScripts();
+        modal.addEventListener('click', (event) =>{
+            if(event.target.closest('.welcome-pt-close')){
+                modal.classList.remove('is-active');
+                this.cookieSet();
+                this.loadAllDataScripts();
+            }
         });
     }
     isSearchSystemBotSigns() {        
@@ -57,12 +65,12 @@ class ptsLazyLoad {
         return !!uaList.find(item => sUsrAg.includes(item));
     }
     cookieCheck() {
-        return document.cookie.includes(this.dataSettings.cookie_name);
+        return document.cookie.includes(this.cookie_name);
     }
     cookieSet() {
-        document.cookie = `${this.dataSettings.cookie_name}=true; max-age=${365 * 30 * 24 * 60 * 60 * 1000}; path=/`;
+        document.cookie = `${this.cookie_name}=true; max-age=${365 * 30 * 24 * 60 * 60 * 1000}; path=/`;
     }
-    simpleCheck(need_check) {
+    init(need_check) {
         if (!!need_check && !this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
             this.showMessage();
         } else {
