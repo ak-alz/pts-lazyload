@@ -9,11 +9,10 @@ class ptsLazyLoad {
             'https://yandex.',
             'https://nova.rambler.ru',
             'https://www.bing.com/',
+            'http://localhost'
         ];
     checkReferrer(){
-        this.#engines.find(item => {
-            return document.referrer.startsWith(item);
-        })
+        return !!this.#engines.find(item => document.referrer.includes(item))
     }
     lazyLoadingJS(type, area) {
         // if (this.dataLazyLoadingJS['data'][type]['status'] === false) {
@@ -80,10 +79,20 @@ class ptsLazyLoad {
         // document.cookie = `${this.dataSettings.cookie_name}=true; ${expiryDate}; path=/`;
     }
     simpleCheck(need_check) {
-        if (+need_check === 1 && !this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
-            this.showMessage();
+        if (+need_check === 1 && this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
+            // this.showMessage();
+            console.log('show message');
+            console.log(need_check)
+            console.log(this.cookieCheck())
+            console.log(!this.isSearchSystemBotSigns())
+            console.log(!this.checkReferrer())
         } else {
-            this.loadAllDataScripts();
+            // this.loadAllDataScripts();
+            console.log('no show message')
+            console.log(need_check)
+            console.log(this.cookieCheck())
+            console.log(!this.isSearchSystemBotSigns())
+            console.log(!this.checkReferrer())
         }
     }
 }
