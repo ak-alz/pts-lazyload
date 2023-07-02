@@ -41,7 +41,7 @@ const data = {
             //если параметр area не указан, код будет записан в head
         },
         {
-            html: `<script>console.log('Modal open 2)</script>`,//тут обязательны именно обратные кавычки
+            html: `<script>console.log('Modal open 2)<\/script>`,//тут обязательны именно обратные кавычки
             area: '.before-footer-scripts-place'
         },
     ],
@@ -57,13 +57,14 @@ const data = {
             html: `<script>console.log('Modal open 1')<\/script>`,
         },
         {
-            html: `<script>console.log('Modal open 2')</script>`,
+            html: `<script>console.log('Modal open 2')<\/script>`,
         },
     ],
 }
 ```
 ____
-**То есть обязательными являются только скрипты (коды счетчиков)**
+:exclamation: То есть обязательными являются только скрипты (коды счетчиков)    
+:exclamation: В закрывающем теге script обязательно экранировать слэш "<\/script>"        
 ____
 Инициализируем отложенную загрузку:
 ```javascript
