@@ -6,11 +6,13 @@ class ptsLazyLoad {
                     counters = [],
                     cookie_name = 'PTZ__VERIFIED_COOKIE_NAME',
                     modalText = 'Мы используем файлы cookie на нашем сайте',
-                    checkInternal = true
+                    checkInternal = true,
+                    cookieTime = 365
                 }) {
         this.dataLazyLoadingJS = counters;
         this.cookie_name = cookie_name;
         this.modalText = modalText;
+        this.cookieTime = cookieTime;
         checkInternal && this.#engines.push(this.siteUrl);
     }
     #engines =
@@ -71,7 +73,7 @@ class ptsLazyLoad {
         return document.cookie.includes(this.cookie_name);
     }
     cookieSet() {
-        document.cookie = `${this.cookie_name}=true; max-age=${365 * 30 * 24 * 60 * 60 * 1000}; path=/`;
+        document.cookie = `${this.cookie_name}=true; max-age=${this.cookieTime * 30 * 24 * 60 * 60 * 1000}; path=/`;
     }
     init(need_check) {
         if (!!need_check && !this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
