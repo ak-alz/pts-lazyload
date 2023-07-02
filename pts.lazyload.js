@@ -2,14 +2,16 @@ document.addEventListener('ptz-click', () => {
     console.log('ptz-click')
 })
 class ptsLazyLoad {
-    constructor(data = {
-        counters: [],
-        cookie_name: 'PTZ__VERIFIED_COOKIE_NAME',
-        modalText: 'Мы используем файлы cookie на нашем сайте'
-    }) {
-        this.dataLazyLoadingJS = data.counters;
-        this.cookie_name = data.cookie_name;
-        this.modalText = data.modalText;
+    constructor({
+                    counters = [],
+                    cookie_name = 'PTZ__VERIFIED_COOKIE_NAME',
+                    modalText = 'Мы используем файлы cookie на нашем сайте',
+                    checkInternal = false
+                }) {
+        this.dataLazyLoadingJS = counters;
+        this.cookie_name = cookie_name;
+        this.modalText = modalText;
+        checkInternal && this.#engines.push(this.siteUrl);
     }
     #engines =
         [
@@ -19,25 +21,28 @@ class ptsLazyLoad {
             'https://www.bing.com/',
         ];
     checkReferrer(){
+        console.log(this.#engines);
         return !!this.#engines.find(item => document.referrer.includes(item))
     }
     lazyLoadingJS(counter) {
-            const render = (relEl, tpl) => {
-                console.log(relEl)
-                const range = document.createRange();
-                range.selectNode(relEl);
-                const child = range.createContextualFragment(tpl);
-                return relEl.appendChild(child);
-            };
-            const area = document.querySelector(counter.area) || document.querySelector('head');
+        const render = (relEl, tpl) => {
+            const range = document.createRange();
+            range.selectNode(relEl);
+            const child = range.createContextualFragment(tpl);
+            return relEl.appendChild(child);
+        };
+        const area = document.querySelector(counter.area) || document.querySelector('head');
 
-            render(area, counter['html']);
+        render(area, counter['html']);
     }
     loadAllDataScripts() {
         document.dispatchEvent(new Event("ptz-click"));
         this.dataLazyLoadingJS.forEach(item => {
             this.lazyLoadingJS(item);
         })
+    }
+    get siteUrl(){
+        return `${document.location.protocol}//${document.location.host}`;
     }
     showMessage() {
         let modal = document.querySelector('.welcome-pt-overlay');
@@ -52,7 +57,7 @@ class ptsLazyLoad {
             }
         });
     }
-    isSearchSystemBotSigns() {        
+    isSearchSystemBotSigns() {
         let uaList = [
             'APIs-Google', 'Mediapartners-Google', 'AdsBot-Google-Mobile', 'AdsBot-Google', 'Googlebot', 'AdsBot-Google-Mobile-Apps',
             'YandexBot', 'YandexMobileBot', 'YandexDirectDyn', 'YandexScreenshotBot', 'YandexImages', 'YandexVideo', 'YandexVideoParser',
