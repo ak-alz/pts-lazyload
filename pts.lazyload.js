@@ -6,7 +6,7 @@ class ptsLazyLoad {
                     counters = [],
                     cookie_name = 'PTZ__VERIFIED_COOKIE_NAME',
                     modalText = 'Мы используем файлы cookie на нашем сайте',
-                    checkInternal = false
+                    checkInternal = true
                 }) {
         this.dataLazyLoadingJS = counters;
         this.cookie_name = cookie_name;
@@ -21,7 +21,6 @@ class ptsLazyLoad {
             'https://www.bing.com/',
         ];
     checkReferrer(){
-        console.log(this.#engines);
         return !!this.#engines.find(item => document.referrer.includes(item))
     }
     lazyLoadingJS(counter) {
@@ -32,7 +31,7 @@ class ptsLazyLoad {
             return relEl.appendChild(child);
         };
         const area = document.querySelector(counter.area) || document.querySelector('head');
-
+        console.log(area)
         render(area, counter['html']);
     }
     loadAllDataScripts() {
@@ -83,3 +82,14 @@ class ptsLazyLoad {
         }
     }
 }
+
+
+document.addEventListener('ptz-click', () => {
+    window.yaContextCb.push(()=>{
+        Ya.Context.AdvManager.render({
+            "blockId": "R-A-20041454-45",
+            "type": "fullscreen",
+            "platform": "touch"
+        })
+    })
+})
