@@ -31,7 +31,6 @@ class ptsLazyLoad {
             return relEl.appendChild(child);
         };
         const area = document.querySelector(counter.area) || document.querySelector('head');
-        console.log(area)
         render(area, counter['html']);
     }
     loadAllDataScripts() {
@@ -82,14 +81,3 @@ class ptsLazyLoad {
         }
     }
 }
-
-
-document.addEventListener('ptz-click', () => {
-    window.yaContextCb.push(()=>{
-        Ya.Context.AdvManager.render({
-            "blockId": "R-A-20041454-45",
-            "type": "fullscreen",
-            "platform": "touch"
-        })
-    })
-})
