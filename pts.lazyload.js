@@ -73,7 +73,7 @@ class ptsLazyLoad {
         return document.cookie.includes(this.cookie_name);
     }
     cookieSet() {
-        document.cookie = `${this.cookie_name}=true; max-age=${this.cookieTime * 30 * 24 * 60 * 60 * 1000}; path=/`;
+        document.cookie = `${this.cookie_name}=true; max-age=${this.cookieTime * 24 * 60 * 60}; path=/`;
     }
     init(need_check) {
         if (!!need_check && !this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
