@@ -1,42 +1,63 @@
+document.addEventListener('ptz-click', () => {
+    console.log('ptz-click')
+})
 class ptsLazyLoad {
-    constructor(dataLazyLoadingJS, dataSettings) {
-        this.dataLazyLoadingJS = dataLazyLoadingJS;
-        this.dataSettings = dataSettings;
+    constructor({
+                    counters = [],
+                    cookie_name = 'PTZ__VERIFIED_COOKIE_NAME',
+                    modalText = 'Мы используем файлы cookie на нашем сайте',
+                    checkInternal = true,
+                    cookieTime = 365
+                }) {
+        this.dataLazyLoadingJS = counters;
+        this.cookie_name = cookie_name;
+        this.modalText = modalText;
+        this.cookieTime = cookieTime;
+        checkInternal && this.#engines.push(this.siteUrl);
     }
-    lazyLoadingJS(type, area) {
-        if (this.dataLazyLoadingJS['data'][type]['status'] === false) {
-            this.dataLazyLoadingJS['data'][type]['status'] = true;
-
-            const render = (relEl, tpl) => {
-                const range = document.createRange();
-                range.selectNode(relEl);
-                const child = range.createContextualFragment(tpl);
-                return relEl.appendChild(child);
-            };
-            render(area, this.dataLazyLoadingJS['data'][type]['html']);
-        }
+    #engines =
+        [
+            'https://www.google.',
+            'https://yandex.',
+            'https://nova.rambler.ru',
+            'https://www.bing.com/',
+        ];
+    checkReferrer(){
+        return !!this.#engines.find(item => document.referrer.includes(item))
+    }
+    lazyLoadingJS(counter) {
+        const render = (relEl, tpl) => {
+            const range = document.createRange();
+            range.selectNode(relEl);
+            const child = range.createContextualFragment(tpl);
+            return relEl.appendChild(child);
+        };
+        const area = document.querySelector(counter.area) || document.querySelector('head');
+        render(area, counter['html']);
     }
     loadAllDataScripts() {
-        for (let key in this.dataLazyLoadingJS['data']) {
-            this.lazyLoadingJS(key, document.querySelector(this.dataLazyLoadingJS['data'][key]['area']));
-        }
+        document.dispatchEvent(new Event("ptz-click"));
+        this.dataLazyLoadingJS.forEach(item => {
+            this.lazyLoadingJS(item);
+        })
+    }
+    get siteUrl(){
+        return `${document.location.protocol}//${document.location.host}`;
     }
     showMessage() {
-        let that = this;
         let modal = document.querySelector('.welcome-pt-overlay');
-        let closeButton = document.querySelector('.welcome-pt-close');
+        let text = modal.querySelector('.site-form-text');
+        text.innerText = this.modalText;
         modal.classList.add('is-active');
-        closeButton.addEventListener('click', function(event) {    
-            event.preventDefault();  
-            modal.classList.remove('is-active');
-            that.cookieSet();
-            that.loadAllDataScripts();
-            setTimeout(function() {
-                modal.style.display = 'none';
-            }, 300);
+        modal.addEventListener('click', (event) =>{
+            if(event.target.closest('.welcome-pt-close')){
+                modal.classList.remove('is-active');
+                this.cookieSet();
+                this.loadAllDataScripts();
+            }
         });
     }
-    isSearchSystemBotSigns() {        
+    isSearchSystemBotSigns() {
         let uaList = [
             'APIs-Google', 'Mediapartners-Google', 'AdsBot-Google-Mobile', 'AdsBot-Google', 'Googlebot', 'AdsBot-Google-Mobile-Apps',
             'YandexBot', 'YandexMobileBot', 'YandexDirectDyn', 'YandexScreenshotBot', 'YandexImages', 'YandexVideo', 'YandexVideoParser',
@@ -45,27 +66,17 @@ class ptsLazyLoad {
             'YandexMarket', 'YandexVertis', 'YandexForDomain', 'YandexSpravBot', 'YandexSearchShop', 'YandexMedianaBot', 'YandexOntoDB',
             'YandexOntoDBAPI', 'YandexVerticals', 'Mail.RU_Bot', 'StackRambler', 'Yahoo', 'msnbot', 'bingbot', 'PixelTools', 'PixelBot'
         ];
-        let sBrowser = false, sUsrAg = navigator.userAgent;
-        for (let i = 0; i < uaList.length; i += 1) {
-            if (sUsrAg.indexOf(uaList[i]) > -1) {
-                sBrowser = true;
-                break;
-            }
-        }
-
-        return sBrowser;
+        let   sUsrAg = navigator.userAgent;
+        return !!uaList.find(item => sUsrAg.includes(item));
     }
     cookieCheck() {
-        return document.cookie.indexOf(this.dataSettings.cookie_name) > -1;
+        return document.cookie.includes(this.cookie_name);
     }
     cookieSet() {
-        const date = new Date();      
-        date.setTime(`${date.getTime()}${(365 * 30 * 24 * 60 * 60 * 1000)}`);      
-        let expiryDate = `expiryDate=" ${date.toUTCString()}`;      
-        document.cookie = `${this.dataSettings.cookie_name}=true; ${expiryDate}; path=/`;
+        document.cookie = `${this.cookie_name}=true; max-age=${this.cookieTime * 24 * 60 * 60}; path=/`;
     }
-    simpleCheck(need_check) {
-        if (+need_check === 1 && !this.cookieCheck() && !this.isSearchSystemBotSigns()) {
+    init(need_check) {
+        if (!!need_check && !this.cookieCheck() && !this.isSearchSystemBotSigns() && !this.checkReferrer()) {
             this.showMessage();
         } else {
             this.loadAllDataScripts();

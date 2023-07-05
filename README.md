@@ -1,5 +1,13 @@
-# pts-lazyload v2
+# pts-lazyload v2.1
 Lazy loading JS (без подключения доп. библиотек)
+____
+В версии 2.1 добавлены следующие опции:    
+:white_check_mark: При переходе из поисковых систем Yandex, Google, Rambler, Bing окно пользователю не показывается.    
+:white_check_mark: Текст сообщения можно задать в параметрах (по-умолчанию "Мы используем файлы cookie на нашем сайте").    
+:white_check_mark: При загрузке скриптов генерируется событие 'ptz-click', по которому, например, можно загружать рекламу (мы ведь не хотим её показывать ботам).    
+:white_check_mark: Добавлен параметр checkInternal - если пользователь переходит по внутренним ссылкам, и cookie не установлены, при checkInternal=true окно не показывается.    
+:white_check_mark: Добавлен параметр cookieTime - время жизни cookie в днях, по-умолчанию 365
+____
 
 Для фильтрации ботов и отложенной загрузки JS скриптов требуется выполнить следующие шаги.
 
@@ -8,29 +16,60 @@ Lazy loading JS (без подключения доп. библиотек)
 
 Инициализируем параметры скриптов для отложенной загрузки:
 ```javascript
-let dataLazyLoadingJS = {
-    data: {
-        script_name: {
-            status: false,
-            html: 'Код для загрузки, тут могут быть скрипты, загружаемые скрипты и HTML куски',
-            area: 'Идентификатор блока, в конец которого будет добавлен код из секции html, например head или .some-class-name'
-        }
-    }
-};
+const data = {
+    counters: [
+        {
+            html: `Код для загрузки, тут могут быть скрипты, загружаемые скрипты и HTML куски`,
+            area: 'Идентификатор блока, в конец которого будет добавлен код из секции html, по-умолчанию - head'
+        },
+        {
+            html: ``,
+            area: '.before-footer-scripts-place'
+        },
+    ],
+    cookie_name: 'Как будут называться cookie, по-умолчанию PTZ__VERIFIED_COOKIE_NAME',
+    modalText: 'Текст сообщения в модальном окне',
+    cookieTime: 100 //cookie будут жить 100 дней
+}
 ```
 
-Инициализируем параметры для отрисовки сообщения и установки кук:
+Пример:
 ```javascript
-let dataSettings = {
-    cookie_name: 'SOME_UNIQUE_COOIE_NAME'
-};
+const data = {
+    counters: [
+        {
+            html: `<script>console.log('Modal open 1)<\/script>`,
+            //если параметр area не указан, код будет записан в head
+        },
+        {
+            html: `<script>console.log('Modal open 2)<\/script>`,//тут обязательны именно обратные кавычки
+            area: '.before-footer-scripts-place'
+        },
+    ],
+    cookie_name: 'Как будут называться cookie, по-умолчанию PTZ__VERIFIED_COOKIE_NAME',
+    modalText: 'Текст сообщения в модальном окне'
+}
 ```
-
+Пример 2 (простая инициализация):
+```javascript
+const data = {
+    counters: [
+        {
+            html: `<script>console.log('Modal open 1')<\/script>`,
+        },
+        {
+            html: `<script>console.log('Modal open 2')<\/script>`,
+        },
+    ],
+}
+```
+____
+:exclamation: То есть обязательными являются только скрипты (коды счетчиков)    
+:exclamation: В закрывающем теге script обязательно экранировать слэш "<\/script>"        
+____
 Инициализируем отложенную загрузку:
 ```javascript
-let LazyLoad = new ptsLazyLoad(dataLazyLoadingJS, dataSettings);
-let need_check = 1;
-LazyLoad.simpleCheck(need_check); //метод ожидает 0 или 1, 1 в случае, если необходимо выводить сообщение, 0, если не надо
+new ptsLazyLoad(data).init(1);//метод ожидает 0 или 1, 1 в случае, если необходимо выводить сообщение, 0, если не надо
 ```
 
 Пример:
@@ -56,25 +95,34 @@ LazyLoad.simpleCheck(need_check); //метод ожидает 0 или 1, 1 в �
 <script src="/libs/pts-lazyload/pts.lazyload.js"></script>
 ```
 ```javascript
-document.addEventListener('DOMContentLoaded', function() {
-    let dataLazyLoadingJS = {
-        data: {
-            ya_counter: {
-                status: false,
-                html: '<script src="/libs/counters/counters.js"><\/script><noscript><div><img src="https://mc.yandex.ru/watch/unique_id?ut=noindex" style="position:absolute; left:-9999px;" alt=""><\/div><\/noscript>',
-                area: '.before-footer-scripts-place'
-            },
-            ga_counter: {
-                status: false,
-                html: `<script async src="https://www.googletagmanager.com/gtag/js?id=ga-unique-id"><\/script><script>function getCid() {var match = document.cookie.match('(?:^|;)\\\\s*_ga=([^;]*)');var raw = (match) ? decodeURIComponent(match[1]) : null;if (raw) match = raw.match(/(\\d+\\.\\d+)$/);var gacid = (match) ? match[1] : null;return gacid ? gacid : false;}<\/script>`,
-                area: 'head'
-            }
-        }
-    };
-    let dataSettings = {
-        cookie_name: '__UNIQUE_VERIFIED_COOKIE_NAME'
-    };
-    let LazyLoad = new ptsLazyLoad(dataLazyLoadingJS, dataSettings);
-    LazyLoad.simpleCheck({{ app['user'] ? 0 : 1 }})
-});
+const data = {
+    counters: [
+        {
+            html: `<script>console.log('Modal open 1')<\/script>`,
+
+        },
+        {
+            html: `<script>console.log('Modal open 2')<\/script>`,
+            area: '.before-footer-scripts-place'
+        },
+    ],
+    cookie_name: 'PTZ__VERIFIED_COOKIE_NAME',
+    modalText: 'Мы используем файлы cookie на нашем сайте'
+}
+new ptsLazyLoad(data).init(1);
 ```
+____
+## Пример инициализации рекламного блока по событию ptz-click
+```javascript
+document.addEventListener('ptz-click', () => {
+    window.yaContextCb.push(()=>{
+        Ya.Context.AdvManager.render({
+            "blockId": "R-A-20041454-45",
+            "type": "fullscreen",
+            "platform": "touch"
+        })
+    })
+})
+```
+:+1: То есть загружаем fullscreen рекламу от Яндекса только для реального посетителя
+____
