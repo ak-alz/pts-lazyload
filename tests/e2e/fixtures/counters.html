@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>pts-lazyload e2e: счётчики</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/build/pts.lazyload.min.css">
+
+    <!-- Код Метрики в том виде, в каком его выдаёт интерфейс, без правок -->
+    <template data-pts-lazyload>
+        <!-- Yandex.Metrika counter -->
+        <script type="text/javascript" >
+           (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+           m[i].l=1*new Date();
+           for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+           k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+           (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+           ym(12345678, "init", {
+                clickmap:true,
+                trackLinks:true,
+                accurateTrackBounce:true,
+                webvisor:true
+           });
+        </script>
+        <noscript><div><img src="https://mc.yandex.ru/watch/12345678" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+        <!-- /Yandex.Metrika counter -->
+    </template>
+</head>
+<body>
+<div id="before"></div>
+<template data-pts-lazyload>
+    <div id="in-place">на месте шаблона</div>
+</template>
+<div id="after"></div>
+
+<div id="area"></div>
+<template data-pts-lazyload data-area="#area">
+    <script src="/tests/e2e/fixtures/slow.js"></script>
+    <script>window.__order = (window.__order || []).concat('inline после внешнего');</script>
+</template>
+
+<script src="/build/pts.lazyload.min.js"></script>
+<script>
+    window.__counters = [];
+    new PtsLazyLoad({
+        cookieName: 'e2e_counters',
+        protection: {minDelay: 300},
+        counters: [
+            {html: '<script>__counters.push("строка в head")<\/script>'},
+            {html: '<script>__counters.push("строка в #area")<\/script>', area: '#area'}
+        ]
+    }).init();
+</script>
+</body>
+</html>

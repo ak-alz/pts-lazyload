@@ -1,51 +1,335 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>PTS LazyLoad v2.0</title>
-	<link rel="stylesheet" href="welcome-pt.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>pts-lazyload v3 — демо</title>
+    <link rel="icon" href="data:,">
+    <style>
+        :root {
+            --bg: #f5f6f8;
+            --card: #fff;
+            --text: #1f2329;
+            --muted: #6b7280;
+            --border: #e3e5e9;
+            --primary: #0836ff;
+            --danger: #e11d48;
+            --radius: 10px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 40px 16px;
+            background: var(--bg);
+            color: var(--text);
+            font: 15px/1.5 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Панель лежит поверх затемнения окна (z-index 8000), чтобы кнопки работали при открытом окне */
+        .demo {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 9000;
+            width: 360px;
+            max-width: calc(100vw - 32px);
+            max-height: calc(100vh - 32px);
+            overflow: auto;
+            padding: 20px;
+            border-radius: 14px;
+            background: var(--bg);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, .18);
+        }
+        .page { max-width: 760px; margin: 0 auto 0 420px; color: var(--muted); }
+        @media (max-width: 1100px) {
+            .demo { position: static; width: auto; max-height: none; margin: 0 auto 16px; max-width: 760px; }
+            .page { margin: 0 auto; }
+        }
+        .demo h1 { margin: 0 0 4px; font-size: 28px; }
+        .demo__lead { margin: 0 0 24px; color: var(--muted); }
+
+        .card {
+            margin-bottom: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+        }
+        .card h2 { margin: 0 0 4px; font-size: 16px; }
+        .card p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+
+        .presets { display: flex; flex-wrap: wrap; gap: 8px; }
+        .preset {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--card);
+            color: var(--text);
+            font: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color .15s, background-color .15s;
+        }
+        .preset:hover { border-color: var(--primary); }
+        .preset--active { border-color: var(--primary); background: var(--primary); color: #fff; }
+
+        .actions { display: grid; gap: 8px; }
+        .action {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+            color: var(--text);
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color .15s, box-shadow .15s, transform .15s;
+        }
+        .action:hover { border-color: var(--primary); box-shadow: 0 4px 14px rgba(8, 54, 255, .12); }
+        .action:active { transform: translateY(1px); }
+        .action__icon {
+            display: grid;
+            place-items: center;
+            flex: none;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: rgba(8, 54, 255, .1);
+            color: var(--primary);
+            font-size: 17px;
+        }
+        .action--bot .action__icon { background: rgba(225, 29, 72, .1); color: var(--danger); }
+        .action--bot:hover { border-color: var(--danger); box-shadow: 0 4px 14px rgba(225, 29, 72, .12); }
+        .action__title { display: block; font-weight: 600; font-size: 14px; }
+        .action__hint { display: block; color: var(--muted); font-size: 12px; }
+
+        .log {
+            min-height: 120px;
+            max-height: 220px;
+            margin: 0;
+            padding: 12px 14px;
+            overflow: auto;
+            border-radius: 8px;
+            background: #111827;
+            color: #d1d5db;
+            font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+            white-space: pre-wrap;
+        }
+        .log__ok { color: #4ade80; }
+        .log__bad { color: #f87171; }
+        .log__info { color: #93c5fd; }
+    </style>
 </head>
 <body>
+<main class="demo">
+    <h1>pts-lazyload v3</h1>
+    <p class="demo__lead">Счётчики загружаются только после того, как посетитель подтвердит, что он человек.</p>
 
-	<div class="before-footer-scripts-place"></div>
+    <section class="card">
+        <h2>Вариант окна</h2>
+        <p>Переключение показывает окно заново.</p>
+        <div class="presets" id="presets"></div>
+    </section>
 
-	<div class="welcome-pt-modal">
-		<div class="welcome-pt-overlay">
-			<div class="site-popup-inner welcome-pt-message">
-				<form method="post" enctype="multipart/form-data" action="">
-					<div class="site-row">
-						<p class="site-form-text">Мы используем файлы cookie на нашем сайте</p>
-					</div>
-					<div class="site-form-buttons">
-						<div class="site-form-button welcome-pt-close">
-							<span>OK</span>
-						</div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
-	<script src="pts.lazyload.js"></script>
-	<script>
-		const data = {
-			counters: [
-				{
-					html: `<script>console.log('Modal open 1')<\/script>`,
+    <section class="card">
+        <h2>Действия</h2>
+        <p>Красные — то, что делают боты: защита должна их отклонить.</p>
+        <div class="actions">
+            <button type="button" class="action" id="reset">
+                <span class="action__icon">↻</span>
+                <span><span class="action__title">Показать окно снова</span><span class="action__hint">сбросить подтверждение</span></span>
+            </button>
+            <button type="button" class="action action--bot" id="bot-click">
+                <span class="action__icon">🤖</span>
+                <span><span class="action__title">Клик бота</span><span class="action__hint">element.click() по кнопке</span></span>
+            </button>
+            <button type="button" class="action action--bot" id="bot-dispatch">
+                <span class="action__icon">⚡</span>
+                <span><span class="action__title">Событие из JS</span><span class="action__hint">dispatchEvent(click)</span></span>
+            </button>
+            <button type="button" class="action action--bot" id="bot-escape">
+                <span class="action__icon">⎋</span>
+                <span><span class="action__title">Escape из JS</span><span class="action__hint">KeyboardEvent без нажатия</span></span>
+            </button>
+        </div>
+    </section>
 
-				},
-				{
-					html: `<script>console.log('Modal open 2')<\/script>`,
-					area: '.before-footer-scripts-place'
-				},
-			],
-			cookie_name: 'PTZ__VERIFIED_COOKIE_NAME',
-			modalText: 'Мы используем файлы cookie на нашем сайте',
-			cookieTime: 365
-		}
-		new ptsLazyLoad(data).init(1);
-	</script>
+    <section class="card">
+        <h2>Журнал</h2>
+        <p>События скрипта и загрузка счётчиков.</p>
+        <pre class="log" id="log"></pre>
+    </section>
+</main>
 
+<div class="page">
+    <h2>Контент страницы</h2>
+    <p>Здесь мог бы быть ваш сайт. Пока окно открыто, прокрутка заблокирована (кроме варианта «Плашка снизу»).</p>
+    <p><a href="#">Ссылка на странице</a></p>
+</div>
+
+<div class="before-footer-scripts-place"></div>
+
+<template data-pts-lazyload>
+    <script>
+        window.demoLog('→ счётчик 1 загружен (template, на своём месте)', 'ok');
+    </script>
+</template>
+
+<template data-pts-lazyload data-area=".before-footer-scripts-place">
+    <script>
+        window.demoLog('→ счётчик 2 загружен (template, в .before-footer-scripts-place)', 'ok');
+    </script>
+</template>
+
+<template id="welcome-content">
+    <p>Мы используем файлы cookie, чтобы сайт работал лучше.</p>
+    <p>Подробнее — в <a href="#privacy">политике конфиденциальности</a>.</p>
+</template>
+
+<script>
+    const logEl = document.getElementById('log');
+    window.demoLog = (text, type = '') => {
+        const line = document.createElement('div');
+        line.className = type ? `log__${type}` : '';
+        line.textContent = `${new Date().toLocaleTimeString()}  ${text}`;
+        logEl.append(line);
+        logEl.scrollTop = logEl.scrollHeight;
+    };
+</script>
+
+<script type="module">
+    import PtsLazyLoad from './src/index.js';
+
+    const COOKIE = 'demo_verified';
+
+    const PRESETS = {
+        default: {
+            label: 'По умолчанию',
+            options: {},
+        },
+        full: {
+            label: 'Заголовок, абзацы, крестик',
+            options: {
+                closeButton: true,
+                closeOnOverlay: true,
+                closeOnEscape: true,
+                modal: {title: 'Добро пожаловать!', content: document.getElementById('welcome-content')},
+                theme: {accent: '#16a34a', accentHover: '#15803d', animation: 'zoom'},
+            },
+        },
+        dark: {
+            label: 'Тёмная',
+            options: {
+                closeButton: true,
+                closeOnEscape: true,
+                modal: {title: 'Привет!', text: 'Мы используем файлы cookie.\n\nНажмите «Принять», чтобы закрыть окно.', modifier: 'dark'},
+                theme: {accent: '#a78bfa', accentHover: '#8b5cf6', accentText: '#1f2329', overlay: {blur: 6}},
+            },
+        },
+        bottom: {
+            label: 'Плашка снизу',
+            options: {
+                lockScroll: false,
+                closeButton: true,
+                modal: {buttonText: 'Понятно', modifier: 'bottom inline'},
+                theme: {
+                    animation: 'slide-up',
+                    dialog: {width: 760, padding: '16px 20px'},
+                    text: {fontSize: 14},
+                    button: {height: 40, minWidth: 0, padding: '8px 20px', textTransform: 'none', radius: 999},
+                    breakpoints: {600: {text: {fontSize: 13}}},
+                },
+            },
+        },
+        styled: {
+            label: 'Свои стили',
+            options: {
+                closeButton: true,
+                modal: {title: 'Вам есть 18 лет?', text: 'Сайт содержит информацию для взрослых.', buttonText: 'Да, мне есть 18'},
+                theme: {
+                    fontFamily: 'Georgia, serif',
+                    overlay: {background: 'rgba(30, 20, 10, .6)'},
+                    dialog: {background: '#fff8ed', radius: 24, padding: 44, shadow: '0 30px 60px rgba(0,0,0,.25)'},
+                    title: {fontSize: 36, fontWeight: 700, color: '#7c2d12'},
+                    text: {fontSize: 18, color: '#9a3412'},
+                    button: {background: '#ea580c', backgroundHover: '#c2410c', radius: 999, textTransform: 'none', fontSize: 18, padding: '0 40px'},
+                    close: {color: '#7c2d12', opacity: 0.8},
+                    animation: {type: 'slide-down', duration: 450, easing: 'cubic-bezier(.2, .8, .2, 1.2)'},
+                },
+            },
+        },
+        intercept: {
+            label: 'Крестик = отказ',
+            options: {
+                closeButton: true,
+                modal: {title: 'Перехват действий', text: 'Крестик закрывает окно без загрузки счётчиков: ctx.dismiss().\n\nКнопка подтверждает с задержкой: next() через секунду.'},
+                intercept: {
+                    close: (ctx) => ctx.dismiss(),
+                    button: (ctx, next) => {
+                        demoLog('intercept.button: подтверждение через 1 секунду', 'info');
+                        setTimeout(next, 1000);
+                    },
+                },
+            },
+        },
+    };
+
+    const current = new URLSearchParams(location.search).get('preset') || 'default';
+
+    const presetsEl = document.getElementById('presets');
+    for (const [key, {label}] of Object.entries(PRESETS)) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `preset${key === current ? ' preset--active' : ''}`;
+        button.textContent = label;
+        button.addEventListener('click', () => {
+            resetVerification();
+            location.search = `?preset=${key}`;
+        });
+        presetsEl.append(button);
+    }
+
+    function resetVerification() {
+        document.cookie = `${COOKIE}=; max-age=0; path=/`;
+        try {
+            localStorage.removeItem(COOKIE);
+        } catch {}
+    }
+
+    const STYLE = {verified: 'ok', reject: 'bad', blocked: 'bad', dismiss: 'info', show: 'info'};
+    for (const name of Object.keys(STYLE)) {
+        document.addEventListener(`pts-lazyload:${name}`, (e) => {
+            demoLog(`pts-lazyload:${name}${e.detail?.reason ? ` (${e.detail.reason})` : ''}`, STYLE[name]);
+        });
+    }
+
+    const realButton = () => document.querySelector('.pts-lazyload__button:not([tabindex="-1"])');
+    const ifOpen = (fn) => () => (document.querySelector('.pts-lazyload--open') ? fn() : demoLog('окно не открыто — нажмите «Показать окно снова»'));
+
+    document.getElementById('reset').addEventListener('click', () => {
+        resetVerification();
+        location.reload();
+    });
+    document.getElementById('bot-click').addEventListener('click', ifOpen(() => document.querySelector('.pts-lazyload__button').click()));
+    document.getElementById('bot-dispatch').addEventListener('click', ifOpen(() => realButton().dispatchEvent(new MouseEvent('click', {bubbles: true}))));
+    document.getElementById('bot-escape').addEventListener('click', ifOpen(() => document.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}))));
+
+    demoLog(`вариант: ${PRESETS[current]?.label ?? current}`);
+
+    new PtsLazyLoad({
+        cookieName: COOKIE,
+        salt: 'demo-salt',
+        counters: [
+            {html: '<script>demoLog("→ счётчик 3 загружен (строка html, в head)", "ok")<\/script>'},
+        ],
+        ...(PRESETS[current] || PRESETS.default).options,
+        debug: true,
+    }).init();
+</script>
 </body>
 </html>

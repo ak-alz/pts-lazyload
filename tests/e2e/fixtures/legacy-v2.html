@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>pts-lazyload e2e: конфигурация v2.1</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/build/pts.lazyload.css">
+</head>
+<body>
+<div class="before-footer-scripts-place"></div>
+
+<!-- Инициализация скопирована из README v2.1 -->
+<script src="/build/pts.lazyload.js"></script>
+<script>
+    window.__counters = [];
+    window.__ptz = 0;
+    document.addEventListener('ptz-click', function () {
+        window.__ptz++;
+    });
+    const data = {
+        counters: [
+            {
+                html: `<script>__counters.push('Modal open 1')<\/script>`,
+            },
+            {
+                html: `<script>__counters.push('Modal open 2')<\/script>`,
+                area: '.before-footer-scripts-place'
+            },
+        ],
+        cookie_name: 'PTZ__VERIFIED_COOKIE_NAME',
+        modalText: 'Мы используем файлы cookie на нашем сайте',
+        checkInternal: true,
+        cookieTime: 365
+    };
+    new ptsLazyLoad(data).init(location.hash === '#auth' ? 0 : 1);
+</script>
+</body>
+</html>

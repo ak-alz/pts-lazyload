@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Конструктор pts-lazyload — защита счётчиков от ботов</title>
+    <meta name="description" content="Настройте окно защиты счётчиков Яндекс Метрики и Google Analytics от ботов и скопируйте готовый код для сайта.">
+    <link rel="icon" href="./favicon.ico" sizes="any">
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+<header class="header">
+    <div class="header__brand">
+        <a class="header__logo" href="https://tools.pixelplus.ru/" target="_blank" rel="noopener">
+            <img src="./logo.svg" alt="Пиксель Тулс" width="157" height="28">
+        </a>
+        <div class="header__divider" aria-hidden="true"></div>
+        <div>
+            <h1 class="header__title">Конструктор защиты счётчиков</h1>
+            <p class="header__subtitle">Счётчики загружаются только после того, как посетитель подтвердит, что он человек</p>
+        </div>
+    </div>
+    <nav class="header__nav">
+        <a href="https://github.com/ak-alz/pts-lazyload#readme" target="_blank" rel="noopener">Документация</a>
+        <a href="https://github.com/ak-alz/pts-lazyload/blob/master/docs/cms.md" target="_blank" rel="noopener">Установка в CMS</a>
+        <a href="https://tools.pixelplus.ru/ask" target="_blank" rel="noopener">Поддержка</a>
+    </nav>
+</header>
+
+<main class="layout">
+    <aside class="sidebar" aria-label="Настройки">
+        <div class="sidebar__presets">
+            <span class="sidebar__label">Готовые стили</span>
+            <div class="chips" id="presets"></div>
+        </div>
+        <div class="form" id="form"></div>
+        <div class="sidebar__footer">
+            <button type="button" class="btn btn--ghost" id="reset">Сбросить всё</button>
+        </div>
+    </aside>
+
+    <div class="workspace">
+        <div class="toolbar">
+            <div class="segmented" role="group" aria-label="Устройство">
+                <button type="button" class="segmented__item segmented__item--active" data-device="desktop">Компьютер</button>
+                <button type="button" class="segmented__item" data-device="tablet">Планшет</button>
+                <button type="button" class="segmented__item" data-device="mobile">Телефон</button>
+            </div>
+            <div class="toolbar__group">
+                <div class="segmented" role="group" aria-label="Тема системы в предпросмотре" id="scheme-toggle" hidden>
+                    <button type="button" class="segmented__item segmented__item--active" data-scheme="light">☀ Светлая система</button>
+                    <button type="button" class="segmented__item" data-scheme="dark">☾ Тёмная система</button>
+                </div>
+                <button type="button" class="btn btn--ghost" id="replay">▶ Показать заново</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage">
+            <iframe class="stage__frame" id="preview" src="./preview.html" title="Предпросмотр окна"></iframe>
+        </div>
+
+        <section class="code" aria-labelledby="code-title">
+            <h2 class="visually-hidden" id="code-title">Готовый код</h2>
+            <div class="code__head">
+                <div class="tabs" role="tablist">
+                    <button type="button" class="tabs__item tabs__item--active" role="tab" data-tab="snippet">Готовый код</button>
+                    <button type="button" class="tabs__item" role="tab" data-tab="options">Только настройки</button>
+                </div>
+                <div class="code__actions">
+                    <label class="code__assets">
+                        Файлы:
+                        <select id="assets">
+                            <option value="cdn">с CDN</option>
+                            <option value="local">со своего сервера</option>
+                        </select>
+                    </label>
+                    <button type="button" class="btn btn--ghost" id="share">Ссылка на настройки</button>
+                    <button type="button" class="btn btn--primary" id="copy">Скопировать код</button>
+                </div>
+            </div>
+            <p class="code__hint" id="code-hint"></p>
+            <pre class="code__body" tabindex="0"><code id="code"></code></pre>
+        </section>
+    </div>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

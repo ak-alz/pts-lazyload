@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>pts-lazyload e2e: init выше счётчиков</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/build/pts.lazyload.min.css">
+</head>
+<body>
+<!-- init() в начале body, как в header-шаблонах CMS -->
+<script src="/build/pts.lazyload.min.js"></script>
+<script>
+    window.__counters = [];
+    new PtsLazyLoad({cookieName: 'e2e_head', protection: {minDelay: 300}}).init();
+</script>
+<p>Контент страницы</p>
+
+<!-- Счётчик в футере, ниже вызова init() -->
+<template data-pts-lazyload>
+    <script>__counters.push('из футера');</script>
+</template>
+</body>
+</html>

@@ -1,0 +1,41 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit-тесты
+        run: npm run test:unit
+
+      - name: build/ соответствует src/
+        run: |
+          npm run build
+          git diff --exit-code -- build || (echo "::error::build/ устарел: выполните npm run build и закоммитьте результат" && exit 1)
+
+      - name: Сборка конструктора
+        run: npm run site:build
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: E2E-тесты
+        run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7

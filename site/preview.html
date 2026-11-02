@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Предпросмотр</title>
+    <link rel="icon" href="./favicon.ico" sizes="any">
+    <style>
+        body {
+            margin: 0;
+            background: #f4f5f7;
+            color: #374151;
+            font: 15px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        .site-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .site-logo { width: 120px; height: 20px; border-radius: 6px; background: #d1d5db; }
+        .site-nav { display: flex; gap: 16px; }
+        .site-nav span { width: 56px; height: 10px; border-radius: 5px; background: #e5e7eb; }
+        .site-main { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+        .site-hero { height: 180px; margin-bottom: 24px; border-radius: 12px; background: linear-gradient(135deg, #c7d2fe, #fbcfe8); }
+        .site-line { height: 12px; margin-bottom: 12px; border-radius: 6px; background: #e5e7eb; }
+        .site-line:nth-child(3n) { width: 70%; }
+        .site-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 24px; }
+        .site-card { height: 120px; border-radius: 10px; background: #fff; border: 1px solid #e5e7eb; }
+
+        .preview-toast {
+            position: fixed;
+            left: 50%;
+            top: 16px;
+            z-index: 9999;
+            max-width: calc(100% - 32px);
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: #111827;
+            color: #fff;
+            font-size: 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(-50%, -12px);
+            transition: opacity .25s, transform .25s, visibility .25s;
+        }
+        .preview-toast--visible { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+        .preview-toast--ok { background: #15803d; }
+        .preview-toast--bad { background: #b91c1c; }
+    </style>
+</head>
+<body>
+<!-- Макет сайта: только div, чтобы не дублировать ориентиры страницы конструктора для скринридеров -->
+<div class="site-header">
+    <div class="site-logo"></div>
+    <div class="site-nav"><span></span><span></span><span></span><span></span></div>
+</div>
+<div class="site-main">
+    <div class="site-hero"></div>
+    <div class="site-line"></div>
+    <div class="site-line"></div>
+    <div class="site-line"></div>
+    <div class="site-line"></div>
+    <div class="site-line"></div>
+    <div class="site-grid">
+        <div class="site-card"></div>
+        <div class="site-card"></div>
+        <div class="site-card"></div>
+    </div>
+    <div class="site-line" style="margin-top: 24px"></div>
+    <div class="site-line"></div>
+    <div class="site-line"></div>
+</div>
+<div class="preview-toast" id="toast" role="status"></div>
+<script type="module" src="./src/preview.js"></script>
+</body>
+</html>

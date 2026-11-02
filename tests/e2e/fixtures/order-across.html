@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>pts-lazyload e2e: порядок между шаблонами</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/build/pts.lazyload.min.css">
+</head>
+<body>
+<!-- Библиотека в одном шаблоне, её инициализация — в другом и в counters: выполняться должны по порядку -->
+<template data-pts-lazyload>
+    <script src="/tests/e2e/fixtures/slow.js"></script>
+</template>
+<template data-pts-lazyload>
+    <script>window.__order.push('шаблон 2');</script>
+</template>
+
+<script src="/build/pts.lazyload.min.js"></script>
+<script>
+    window.__order = [];
+    new PtsLazyLoad({
+        cookieName: 'e2e_order',
+        protection: {minDelay: 300},
+        counters: [
+            {html: '<script>window.__order.push("counters[0]")<\/script>'},
+            {html: '<script>window.__order.push("counters[1]")<\/script>'}
+        ]
+    }).init();
+</script>
+</body>
+</html>
