@@ -1,0 +1,73 @@
+// Значения по умолчанию. Каждое можно переопределить при подключении SCSS (@use ... with (...)),
+// а в браузере — CSS-переменной --pts-lazyload-* или параметром theme.
+
+// Общие
+$accent: #0836ff !default;
+$accent-hover: #0435c9 !default;
+$accent-text: #fff !default;
+$font-family: inherit !default;
+$z-index: 8000 !default;
+$gutter: 16px !default;
+
+// Анимация появления
+$animation-duration: .3s !default;
+$animation-easing: ease !default;
+$animation-transform: translateY(16px) !default;
+
+// Затемнение
+$overlay: rgba(0, 0, 0, .5) !default;
+$overlay-blur: 0px !default;
+
+// Окно
+$background: #fff !default;
+$text: #3d424b !default;
+$width: 500px !default;
+$padding: 30px !default;
+$padding-mobile: 24px 20px !default;
+$radius: 8px !default;
+$shadow: 0 11px 15px -7px rgba(0, 0, 0, .2), 0 24px 38px 3px rgba(0, 0, 0, .14), 0 9px 46px 8px rgba(0, 0, 0, .12) !default;
+
+// Заголовок
+$title: #3d424b !default;
+$title-font-size: 32px !default;
+$title-font-size-mobile: 26px !default;
+$title-font-weight: 300 !default;
+$title-line-height: 1.2 !default;
+$title-margin: 0 0 20px !default;
+
+// Текст
+$text-font-size: 16px !default;
+$text-line-height: 1.4 !default;
+$text-paragraph-gap: .75em !default;
+
+// Блок кнопок
+$actions-margin-top: 32px !default;
+
+// Кнопка
+$button-height: 50px !default;
+$button-min-width: 180px !default;
+$button-padding: 8px 32px !default;
+$button-radius: 5px !default;
+$button-font-size: 16px !default;
+$button-font-weight: 400 !default;
+$button-letter-spacing: .02em !default;
+$button-text-transform: uppercase !default;
+$button-shadow: 0 3px 1px -2px rgba(0, 0, 0, .2), 0 2px 2px 0 rgba(0, 0, 0, .14), 0 1px 5px 0 rgba(0, 0, 0, .12) !default;
+
+// Крестик
+$close-size: 36px !default;
+$close-offset: 8px !default;
+$close-font-size: 28px !default;
+// Ниже .7 значок крестика не проходит требование контраста для элементов интерфейса (WCAG 3:1)
+$close-opacity: .7 !default;
+$close-radius: 50% !default;
+$close-background-hover: rgba(127, 127, 127, .12) !default;
+
+// Тёмная тема (модификатор --dark)
+$dark-background: #1f2329 !default;
+$dark-text: #d7dbe0 !default;
+$dark-title: #fff !default;
+$dark-overlay: rgba(0, 0, 0, .7) !default;
+
+// Граница «телефон» как в Bootstrap (самый распространённый CSS-фреймворк): мобильная раскладка до 575.98 px
+$mobile: 575.98px !default;

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>pts-lazyload e2e: невалидный data-area</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/build/pts.lazyload.min.css">
+</head>
+<body>
+<template data-pts-lazyload data-area="123 невалидный селектор">
+    <script>window.__counters.push('плохой data-area');</script>
+</template>
+<template data-pts-lazyload>
+    <script>window.__counters.push('второй шаблон');</script>
+</template>
+
+<script src="/build/pts.lazyload.min.js"></script>
+<script>
+    window.__counters = [];
+    document.addEventListener('pts-lazyload:verified', () => { window.__verified = true; });
+    new PtsLazyLoad({
+        cookieName: 'e2e_bad_area',
+        protection: {minDelay: 300},
+        counters: [{html: '<script>window.__counters.push("плохой area")<\/script>', area: '>>>'}]
+    }).init();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>pts-lazyload e2e</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/build/pts.lazyload.min.css">
+</head>
+<body>
+<p><a href="#" id="page-link">Ссылка на странице</a></p>
+<div id="area"></div>
+
+<template id="welcome">
+    <p>Абзац из шаблона</p>
+    <p>Второй с <a href="/privacy">ссылкой</a></p>
+</template>
+
+<script src="/build/pts.lazyload.min.js"></script>
+<script>
+    window.__events = [];
+    window.__counters = window.__counters || [];
+
+    ['show', 'verified', 'reject', 'blocked', 'dismiss'].forEach(function (name) {
+        document.addEventListener('pts-lazyload:' + name, function (e) {
+            __events.push(name + (e.detail && e.detail.reason ? ':' + e.detail.reason : ''));
+        });
+    });
+    document.addEventListener('ptz-click', function () {
+        __events.push('ptz-click');
+    });
+
+    if (!window.__PTS_MANUAL__) {
+        var options = window.__PTS_OPTIONS_SRC__ ? new Function('return (' + window.__PTS_OPTIONS_SRC__ + ');')() : {};
+        options.cookieName = options.cookieName || 'e2e_verified';
+        options.salt = options.salt || 'e2e';
+        options.protection = Object.assign({minDelay: 300}, options.protection);
+        options.counters = options.counters || [{html: '<script>__counters.push("counter")<\/script>'}];
+        window.__pts = new PtsLazyLoad(options).init(window.__PTS_NEED_CHECK__);
+    }
+</script>
+</body>
+</html>

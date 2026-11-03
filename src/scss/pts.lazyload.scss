@@ -1,0 +1,417 @@
+@forward 'variables';
+@use 'variables' as *;
+
+$block: pts-lazyload;
+
+// var(--pts-lazyload-<name>, <fallback>): значение задаётся параметром theme или CSS-переменной,
+// без них используется значение по умолчанию из _variables.scss
+@function v($name, $fallback: null) {
+  @if $fallback == null {
+    @return var(--#{$block}-#{$name});
+  }
+  @return var(--#{$block}-#{$name}, #{$fallback});
+}
+
+.#{$block} {
+  --#{$block}-accent: #{$accent};
+  --#{$block}-accent-hover: #{$accent-hover};
+  --#{$block}-accent-text: #{$accent-text};
+
+  position: fixed;
+  inset: 0;
+  z-index: v(z-index, $z-index);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // Отступ окна от краёв экрана: окно никогда не шире экрана минус два отступа
+  padding: v(gutter, $gutter);
+  overflow-y: auto;
+  box-sizing: border-box;
+  font-family: v(font-family, $font-family);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity v(animation-duration, $animation-duration) v(animation-easing, $animation-easing),
+    visibility 0s linear v(animation-duration, $animation-duration);
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  &--open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity v(animation-duration, $animation-duration) v(animation-easing, $animation-easing), visibility 0s;
+  }
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: v(overlay-background, $overlay);
+    backdrop-filter: blur(v(overlay-blur, $overlay-blur));
+  }
+
+  &__dialog {
+    position: relative;
+    width: 100%;
+    max-width: v(dialog-width, $width);
+    margin: auto;
+    padding: v(dialog-padding, $padding);
+    border: v(dialog-border, none);
+    border-radius: v(dialog-radius, $radius);
+    background: v(dialog-background, $background);
+    box-shadow: v(dialog-shadow, $shadow);
+    color: v(dialog-color, $text);
+    text-align: v(dialog-text-align, center);
+    transform: v(animation-transform, $animation-transform);
+    transition: transform v(animation-duration, $animation-duration) v(animation-easing, $animation-easing);
+  }
+
+  &--open &__dialog {
+    transform: none;
+  }
+
+  &__title {
+    margin: v(title-margin, $title-margin);
+    color: v(title-color, $title);
+    font-family: v(title-font-family, inherit);
+    font-size: v(title-font-size, $title-font-size);
+    font-weight: v(title-font-weight, $title-font-weight);
+    line-height: v(title-line-height, $title-line-height);
+    text-align: v(title-text-align, inherit);
+    overflow-wrap: break-word;
+  }
+
+  &__body {
+    overflow-wrap: break-word;
+    color: v(text-color, inherit);
+    font-size: v(text-font-size, $text-font-size);
+    line-height: v(text-line-height, $text-line-height);
+    text-align: v(text-text-align, inherit);
+
+    p {
+      margin: 0;
+    }
+
+    p + p {
+      margin-top: v(text-paragraph-gap, $text-paragraph-gap);
+    }
+
+    a {
+      color: v(text-link-color, v(accent));
+      text-decoration-line: v(text-link-decoration, underline);
+
+      &:hover {
+        color: v(text-link-color-hover, v(text-link-color, v(accent)));
+        text-decoration-line: v(text-link-decoration-hover, v(text-link-decoration, underline));
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: v(actions-justify, center);
+    gap: v(actions-gap, 12px);
+    margin-top: v(actions-margin-top, $actions-margin-top);
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: v(button-width, auto);
+    max-width: 100%;
+    min-width: v(button-min-width, $button-min-width);
+    min-height: v(button-height, $button-height);
+    margin: 0;
+    padding: v(button-padding, $button-padding);
+    border: v(button-border, none);
+    border-radius: v(button-radius, $button-radius);
+    background: v(button-background, v(accent));
+    box-shadow: v(button-shadow, $button-shadow);
+    color: v(button-color, v(accent-text));
+    font: inherit;
+    font-size: v(button-font-size, $button-font-size);
+    font-weight: v(button-font-weight, $button-font-weight);
+    line-height: 1.2;
+    letter-spacing: v(button-letter-spacing, $button-letter-spacing);
+    text-align: center;
+    text-transform: v(button-text-transform, $button-text-transform);
+    // Длинный текст кнопки переносится, а не вылезает за окно на узких экранах
+    white-space: normal;
+    overflow-wrap: break-word;
+    cursor: pointer;
+    transition: background-color .2s, color .2s, box-shadow .2s;
+
+    &:hover {
+      background: v(button-background-hover, v(accent-hover));
+      color: v(button-color-hover, v(button-color, v(accent-text)));
+    }
+
+    &:focus-visible {
+      outline: 2px solid v(button-background, v(accent));
+      outline-offset: 3px;
+    }
+  }
+
+  // Второстепенная кнопка «Только необходимые»: размеры как у основной, вид спокойнее — без заливки, с неяркой рамкой.
+  // Текст полноконтрастный: полупрозрачный текст не проходит требования доступности к контрасту (WCAG 4.5:1)
+  &__decline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: v(button-width, auto);
+    max-width: 100%;
+    min-width: v(decline-min-width, 0);
+    min-height: v(button-height, $button-height);
+    margin: 0;
+    padding: v(button-padding, $button-padding);
+    border: v(decline-border, 1px solid rgba(127, 127, 127, .5));
+    border-radius: v(button-radius, $button-radius);
+    background: v(decline-background, transparent);
+    color: v(decline-color, inherit);
+    font: inherit;
+    font-size: v(button-font-size, $button-font-size);
+    font-weight: v(decline-font-weight, v(button-font-weight, $button-font-weight));
+    line-height: 1.2;
+    letter-spacing: v(button-letter-spacing, $button-letter-spacing);
+    text-align: center;
+    text-transform: v(button-text-transform, $button-text-transform);
+    white-space: normal;
+    overflow-wrap: break-word;
+    opacity: v(decline-opacity, 1);
+    cursor: pointer;
+    transition: background-color .2s, color .2s, border-color .2s;
+
+    &:hover {
+      border-color: v(decline-border-color-hover, rgba(127, 127, 127, .8));
+      background: v(decline-background-hover, rgba(127, 127, 127, .1));
+      color: v(decline-color-hover, v(decline-color, inherit));
+    }
+
+    &:focus-visible {
+      outline: 2px solid v(accent);
+      outline-offset: 3px;
+    }
+  }
+
+  // Две кнопки делят строку поровну. Если не помещаются — встают друг под другом, главная сверху
+  &--with-decline &__actions {
+    flex-wrap: wrap-reverse;
+  }
+
+  &--with-decline &__decline,
+  &--with-decline &__button {
+    flex: 1 1 auto;
+  }
+
+  &__close {
+    position: absolute;
+    top: v(close-top, $close-offset);
+    right: v(close-right, $close-offset);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: v(close-size, $close-size);
+    height: v(close-size, $close-size);
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: v(close-radius, $close-radius);
+    background: v(close-background, transparent);
+    color: v(close-color, v(dialog-color, $text));
+    font: inherit;
+    font-size: v(close-font-size, $close-font-size);
+    line-height: 1;
+    opacity: v(close-opacity, $close-opacity);
+    cursor: pointer;
+    transition: opacity .2s, background-color .2s;
+
+    &:hover {
+      background: v(close-background-hover, $close-background-hover);
+      opacity: 1;
+    }
+
+    &:focus-visible {
+      opacity: 1;
+      outline: 2px solid v(accent);
+      outline-offset: 2px;
+    }
+
+    svg {
+      width: 1em;
+      height: 1em;
+    }
+  }
+
+  &--pristine &__button:focus-visible,
+  &--pristine &__decline:focus-visible,
+  &--pristine &__close:focus-visible {
+    outline: none;
+  }
+
+  // Заголовок и текст не должны залезать под крестик
+  &__close + &__title,
+  &__close + &__body {
+    padding-left: v(close-size, $close-size);
+    padding-right: v(close-size, $close-size);
+  }
+
+  // Ловушка для ботов: должна оставаться в DOM и быть невидимой для человека
+  &__aux {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  &--dark {
+    --#{$block}-dialog-background: #{$dark-background};
+    --#{$block}-dialog-color: #{$dark-text};
+    --#{$block}-title-color: #{$dark-title};
+    --#{$block}-overlay-background: #{$dark-overlay};
+  }
+
+  // Ссылка цвета акцента плохо читается на тёмном фоне, поэтому по умолчанию она светлее акцента
+  @supports (color: color-mix(in srgb, red, blue)) {
+    &--dark &__body a {
+      color: v(text-link-color, color-mix(in srgb, v(accent) 55%, #fff));
+    }
+
+    &--dark &__body a:hover {
+      color: v(text-link-color-hover, v(text-link-color, color-mix(in srgb, v(accent) 40%, #fff)));
+    }
+  }
+
+  // Плашка внизу экрана: страница остаётся доступной, используется с lockScroll: false
+  &--bottom {
+    align-items: flex-end;
+    pointer-events: none;
+  }
+
+  &--bottom &__overlay {
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  &--bottom &__dialog {
+    margin: 0 auto;
+    // initial = auto; значение auto устаревший W3C CSS Validator не знает и выдаёт предупреждение
+    pointer-events: initial;
+  }
+
+  // Текст слева, кнопки справа — формат cookie-плашки. На узких экранах перестраивается в колонку
+  &--inline &__dialog {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      'title actions close'
+      'body actions close';
+    align-items: center;
+    column-gap: v(actions-gap, 24px);
+    text-align: v(dialog-text-align, left);
+  }
+
+  &--inline &__title {
+    grid-area: title;
+    margin: v(title-margin, 0 0 4px);
+    padding: 0;
+    font-size: v(title-font-size, 20px);
+  }
+
+  &--inline &__body {
+    grid-area: body;
+    padding: 0;
+  }
+
+  &--inline &__actions {
+    grid-area: actions;
+    margin-top: v(actions-margin-top, 0);
+  }
+
+  &--inline &__close {
+    position: static;
+    grid-area: close;
+    margin-right: calc(#{v(close-size, $close-size)} / -4);
+  }
+
+  @media (max-width: $mobile) {
+    &--inline &__dialog {
+      display: block;
+      text-align: v(dialog-text-align, center);
+    }
+
+    &--inline &__title {
+      margin: v(title-margin, 0 0 14px);
+    }
+
+    &--inline &__close + &__title,
+    &--inline &__close + &__body {
+      padding-left: v(close-size, $close-size);
+      padding-right: v(close-size, $close-size);
+    }
+
+    &--inline &__actions {
+      margin-top: v(actions-margin-top, 20px);
+    }
+
+    &--inline &__close {
+      position: absolute;
+      margin: 0;
+    }
+  }
+
+  @media (max-width: $mobile) {
+    &__dialog {
+      padding: v(dialog-padding, $padding-mobile);
+    }
+
+    &__title {
+      margin: v(title-margin, 0 0 14px);
+      font-size: v(title-font-size, $title-font-size-mobile);
+    }
+
+    &__button,
+    &__decline {
+      width: v(button-width, 100%);
+      min-width: 0;
+    }
+
+  }
+
+  // Режим высокой контрастности Windows убирает фон и тени: без рамок окно и кнопки сливаются со страницей
+  @media (forced-colors: active) {
+    &__dialog {
+      border: 1px solid CanvasText;
+    }
+
+    &__button,
+    &__decline,
+    &__close {
+      border: 1px solid ButtonText;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &--open,
+    &__dialog,
+    &__button,
+    &__decline,
+    &__close {
+      transition: none;
+    }
+  }
+}
+
+.#{$block}-locked {
+  &,
+  body {
+    overflow: hidden;
+  }
+}
